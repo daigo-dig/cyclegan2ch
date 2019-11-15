@@ -22,9 +22,8 @@ class CycleGAN():
         self.img_cols = 256
         self.channels = 2
         self.img_shape = (self.img_rows, self.img_cols,self.channels)
-        self.dataset_name1 = 'apple2orange_mono'
-        self.dataset_name2 = 'apple2orange_mono'
-        self.data_loader = DataLoader(dataset_name1=self.dataset_name1,dataset_name2=self.dataset_name2,
+        self.dataset_name = 'apple2orange_mono'
+        self.data_loader = DataLoader(dataset_name=self.dataset_name,
                                       img_res=(self.img_rows, self.img_cols))
         patch = int(self.img_rows / 2**4)
         self.disc_patch = (patch, patch, 1)

@@ -5,16 +5,14 @@ import cv2
 from operator import itemgetter
 
 class DataLoader():
-    def __init__(self, dataset_name1, dataset_name2,img_res=(256, 256)):
-        self.dataset_name1 = dataset_name1
-        self.dataset_name2 = dataset_name2
+    def __init__(self, dataset_name,img_res=(256, 256)):
+        self.dataset_name = dataset_name
         self.img_res = img_res
 
     def load_data(self, domain, batch_size=1, is_testing=False):
         data_type = "train%s" % domain if not is_testing else "test%s" % domain
-        path1 = glob('./datasets/%s/%s/*' % (self.dataset_name1, data_type))
-        path2 = glob('./datasets/%s/%s/*' % (self.dataset_name2, data_type))
-        data_size = len(batch_images1)
+        path = glob('./datasets/%s/%s/*' % (self.dataset_name, data_type))
+        data_size = len(path)
         shuffled_idx = np.random.choice(np.arange(data_size), batch_size, replace=False)
 
         imgs = []
@@ -36,9 +34,9 @@ class DataLoader():
 
     def load_batch(self, batch_size=1, is_testing=False):
         data_type = "train" if not is_testing else "val"
-        path_A1 = glob('./datasets/%s/%sA/*' % (self.dataset_name1, data_type))
-        path_A2 = glob('./datasets/%s/%sA/*' % (self.dataset_name2, data_type))
-        path_B = glob('./datasets/%s/%sB/*' % (self.dataset_name1, data_type))
+        path_A1 = glob('./datasets/%s/%sA/*' % (self.dataset_name, data_type))
+        path_A2 = glob('./datasets/%s/%sA2/*' % (self.dataset_name, data_type))
+        path_B = glob('./datasets/%s/%sB/*' % (self.dataset_name, data_type))
 
         self.n_batches = int(min(len(path_A1), len(path_B)) / batch_size)
         total_samples = self.n_batches * batch_size

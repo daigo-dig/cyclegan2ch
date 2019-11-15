@@ -21,8 +21,10 @@ class CycleGAN():
         # Input shape
         self.img_rows = 256
         self.img_cols = 256
-        self.channelsA = 1
-        self.img_shape = (self.img_rows, self.img_cols,self.channels)
+        self.channelsA = 2
+        self.channelsB = 1
+        self.img_shapeA = (self.img_rows, self.img_cols,self.channelsA)
+        self.img_shapeB = (self.img_rows, self.img_cols,self.channelsB)
 
         # Configure data loader
         self.dataset_name1 = 'apple2orange_mono'
