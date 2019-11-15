@@ -19,14 +19,15 @@ import os
 class CycleGAN():
     def __init__(self):
         # Input shape
-        self.img_rows = 128
-        self.img_cols = 128
-        self.channels = 1
+        self.img_rows = 256
+        self.img_cols = 256
+        self.channelsA = 1
         self.img_shape = (self.img_rows, self.img_cols,self.channels)
 
         # Configure data loader
-        self.dataset_name = 'apple2orange_mono'
-        self.data_loader = DataLoader(dataset_name=self.dataset_name,
+        self.dataset_name1 = 'apple2orange_mono'
+        self.dataset_name2 = 'apple2orange_mono'
+        self.data_loader = DataLoader(dataset_name1=self.dataset_name1,dataset_name2=self.dataset_name2,
                                       img_res=(self.img_rows, self.img_cols))
 
 
@@ -237,7 +238,7 @@ class CycleGAN():
 
         gen_imgs = np.concatenate([imgs_A, fake_B, reconstr_A, imgs_B, fake_A, reconstr_B])
 
-        gen_imgs = np.reshape(gen_imgs,(6,128,128))
+        gen_imgs = np.reshape(gen_imgs,(6,256,256))
 
         # Rescale images 0 - 1
         gen_imgs = 0.5 * gen_imgs + 0.5
