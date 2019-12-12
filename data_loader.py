@@ -5,14 +5,42 @@ import cv2
 from operator import itemgetter
 
 class DataLoader():
-    def __init__(self, dataset_name,img_res=(256, 256)):
+    def __init__(self, dataset_name,img_rows=256,img_cols=256,img_channelsA=2,img_channelsB=1):
         self.dataset_name = dataset_name
-        self.img_res = img_res
+        self.img_rows = img_rows
+        self.img_cols = img_cols
+        self.img_channelsA = img_channelsA
+        self.img_channelsB = img_channelsB
+        self.img_res = (img_rows,img_cols)
+        self.img_shapeA = (img_rows,img_cols,img_channelsA)
+        self.img_shapeB = (img_rows,img_cols,img_channelsB)
 
     def load_data(self, domain, batch_size=1, is_testing=False):
         data_type = "train%s" % domain if not is_testing else "test%s" % domain
         path = glob('./datasets/%s/%s/*' % (self.dataset_name, data_type))
-        data_size = len(path)
+
+        batch_images = np.random.choice(path, size=batch_size)
+
+        imgs = []
+        for img_path in batch_images:
+            img = self.imread(img_path)
+            if not is_testing:
+                img = np.reshape(cv2.resize(img, self.img_res),self.img_shapeB)
+                if np.random.random() > 0.5:
+                    img = np.fliplr(img)
+            else:
+                img = np.reshape(cv2.resize(img, self.img_res),self.img_shapeB)
+            imgs.append(img)
+
+        imgs = np.array(imgs)/127.5 - 1.
+
+        return imgs
+
+    def load_dataA(self, domain, batch_size=1, is_testing=False):
+        data_type = "train%s" % domain if not is_testing else "test%s" % domain
+        path1 = glob('./datasets/%s/%s%s/*' % (self.dataset_name, data_type, "1"))
+        path2 = glob('./datasets/%s/%s%s/*' % (self.dataset_name, data_type, "2"))
+        data_size = min(len(path1), len(path2))
         shuffled_idx = np.random.choice(np.arange(data_size), batch_size, replace=False)
 
         imgs = []
@@ -21,11 +49,11 @@ class DataLoader():
             img2 = self.imread(path2[img_path])
             img = np.stack([img1,img2])
             if not is_testing:
-                img = np.reshape(cv2.resize(img, self.img_res),(256,256,1))
+                img = np.reshape(img,self.img_shapeA)
                 if np.random.random() > 0.5:
                     img = np.fliplr(img)
             else:
-                img = np.reshape(cv2.resize(img, self.img_res),(256,256,1))
+                img = np.reshape(img,self.img_shapeA)
             imgs.append(img)
 
         imgs = np.array(imgs)/127.5 - 1.
@@ -34,7 +62,7 @@ class DataLoader():
 
     def load_batch(self, batch_size=1, is_testing=False):
         data_type = "train" if not is_testing else "val"
-        path_A1 = glob('./datasets/%s/%sA/*' % (self.dataset_name, data_type))
+        path_A1 = glob('./datasets/%s/%sA1/*' % (self.dataset_name, data_type))
         path_A2 = glob('./datasets/%s/%sA2/*' % (self.dataset_name, data_type))
         path_B = glob('./datasets/%s/%sB/*' % (self.dataset_name, data_type))
 
@@ -62,8 +90,8 @@ class DataLoader():
                 img_B = self.imread(img_B)
                 img_A = np.stack([img_A1,img_A2])
 
-                img_A = np.reshape(img_A,(256,256,2))
-                img_B = np.reshape(cv2.resize(img_B, self.img_res),(256,256,1))
+                img_A = np.reshape(img_A,self.img_shapeA)
+                img_B = np.reshape(cv2.resize(img_B, self.img_res),self.img_shapeB)
 
                 if not is_testing and np.random.random() > 0.5:
                         img_A = np.fliplr(img_A)
